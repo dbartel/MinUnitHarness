@@ -1,36 +1,56 @@
 #include "minunit_harness.h"
 #include <stdio.h>
 
-int run_harness() {
-  if (ALL_TESTS == NULL) {
-    printf("No tests specified!\n");
-    return 1;
+int MU_RUN_HARNESS() {
+  if (TEST_LIST == NULL) {
+    printf("No tests have been added!\n");
+    return 0;
   }
-  MU_HARNESS* harness = ALL_TESTS;
   
+  int total_tests = 0;
+  int tests_passed = 0;
   int tests_failed = 0;
-  while (ALL_TESTS != NULL) {
-    // Run the tests
-    char** result = harness->run_tests();
-    int i = 0;
-    int len = sizeof(result) / sizeof(result[0]);
-    for (; i < len; i++) {
-      if (result[i]) {
-	printf("TEST FAILED: %s\n\n", result[i]);
-	tests_failed++;
-      } 
+
+  
+  MU_TEST* harness = TEST_LIST;
+  while (harness != NULL) {
+    printf("Test: %s -> ", harness->name);
+    char* result = harness->test();
+    if (result == NULL) {
+      printf("passed\n");
+      tests_passed++;
+    } else {
+      printf("failed: %s\n", result);
+      tests_failed++;
     }
-    
-    // Get the next harness
-    harness = harness->next_harness;
+    total_tests++;
+    harness = harness->next;
   }
-  
-  // Print report
-  printf("Total Tests: %d\n  Passed: %d\n  Failed: %d",
-	 tests_run,
-	 tests_run - tests_run,
-	 tests_failed);
-  
+
+  printf("\n%d tests run\nFailed: %d\nPassed: %d\n\n",
+	 total_tests,
+	 tests_failed,
+	 tests_passed);
+
   return tests_failed == 0;
 }
+
+void mu_add_test(char* name, char* (*test)()) {
+  if (TEST_LIST == NULL) {
+    TEST_LIST = malloc(sizeof(MU_TEST));
+    TEST_LIST->test = test;
+    TEST_LIST->name = name;
+    TEST_LIST->next = NULL;
+  } else {
+    MU_TEST* tmp = TEST_LIST;
+    while (tmp->next) tmp = tmp->next;
+
+    tmp->next = malloc(sizeof(MU_TEST));
+    tmp->next->test = test;
+    tmp->next->name = name;
+    tmp->next->next = NULL;
+  }
+}
+
+
 
