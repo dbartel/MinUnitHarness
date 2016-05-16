@@ -35,7 +35,7 @@ int MU_RUN_HARNESS() {
   return tests_failed == 0;
 }
 
-void mu_add_test(char* name, char* (*test)()) {
+void mu_add_test(char* name, char* (*test)(), int* (*setup)(), int* (*teardown)()) {
   if (TEST_LIST == NULL) {
     TEST_LIST = malloc(sizeof(MU_TEST));
     TEST_LIST->test = test;

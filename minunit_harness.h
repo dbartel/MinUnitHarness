@@ -30,7 +30,15 @@ int MU_RUN_HARNESS();
 */
 char* run_test(char* (*test)());
 
-void mu_add_test(char* name, char* (*test)());
+
+/**
+  * Add a test
+  * @param name The name of the test
+  * @param test The test method
+  * @param setup A setup method specific to that test
+  * @param teardown A teardown method specific to that test
+  */
+void mu_add_test(char* name, char* (*test)(), int* (*setup)(), int* (*teardown)());
 
 
 
