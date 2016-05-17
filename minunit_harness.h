@@ -10,6 +10,8 @@ struct TEST_LIST {
   char* (*test)();
   char* name;
   struct TEST_LIST* next;
+  int* (*setup)();
+  int* (*teardown)();
 };
 
 typedef struct TEST_LIST MU_TEST;

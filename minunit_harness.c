@@ -14,6 +14,14 @@ int MU_RUN_HARNESS() {
   
   MU_TEST* harness = TEST_LIST;
   while (harness != NULL) {
+
+
+    // Run setup method if necessary
+    if (harness->setup != NULL) {
+      harness->setup();
+    }
+
+    // Run the test
     printf("Test: %s -> ", harness->name);
     char* result = harness->test();
     if (result == NULL) {
@@ -23,6 +31,12 @@ int MU_RUN_HARNESS() {
       printf("failed: %s\n", result);
       tests_failed++;
     }
+
+    // Run teardown method if necessary
+    if (harness->teardown != NULL) {
+      harness->teardown();
+    }
+    
     total_tests++;
     harness = harness->next;
   }
@@ -41,14 +55,20 @@ void mu_add_test(char* name, char* (*test)(), int* (*setup)(), int* (*teardown)(
     TEST_LIST->test = test;
     TEST_LIST->name = name;
     TEST_LIST->next = NULL;
+
+    if (setup != NULL) TEST_LIST->setup = setup;
+    if (teardown != NULL) TEST_LIST->teardown = teardown;
+    
   } else {
     MU_TEST* tmp = TEST_LIST;
     while (tmp->next) tmp = tmp->next;
-
+    
     tmp->next = malloc(sizeof(MU_TEST));
     tmp->next->test = test;
     tmp->next->name = name;
     tmp->next->next = NULL;
+    tmp->next->setup = setup;
+    tmp->next->teardown = teardown;    
   }
 }
 
